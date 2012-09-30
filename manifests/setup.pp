@@ -1,26 +1,35 @@
 #
 # This class installs Oracle Java for CentOS / RHEL
 # 
+# TODO: prepare unattended -i silent with common bin
+# TODO: unless => "rpm -q --quiet jdk"
+# 
 define java::setup (
   $customSetup  = {},
   $customConf   = {},
   $ensure       = installed,
   $boot         = true,
   $status       = 'running',
-  $version      = '5.1.5',
+  $version      = '6u32',
   $firewall     = false,
-  $firewallPort = '8082',
+  $firewallPort = false,
 ) {
   
   include conf
   $defaultConf = $conf::conf
   $defaultSetup = $conf::setup
 
-  #
-  # Setup JAVA if not exists
-  # 
-  # unless => "rpm -q --quiet jdk-1.6.0_21-fcs"
-  #
+  # exec { "java-download":
+  #   command => "wget -O /tmp/java.rpm.bin find url for java",
+  #   unless => "rpm -q --quiet jdk"
+  # }
+
+  # exec { "java-install":
+  #   command => "chmod a+x /tmp/java.rpm.bin && ./java.rpm.bin",
+  #   unless => "rpm -q --quiet jdk",
+  #   require => Exec['java-download']
+  # }
+
   exec { "java-common-download":
     command => "wget -O /tmp/sun-javadb-common-10.6.2-1.1.i386.rpm https://dl.dropbox.com/u/7225008/Java/sun-javadb-common-10.6.2-1.1.i386.rpm",
   }
@@ -63,8 +72,4 @@ define java::setup (
   exec { "java-home-env":
     command => "echo JAVA_HOME=\"/usr/java/jdk1.6.0_32\" >> /etc/environment && export JAVA_HOME=/usr/java/jdk1.6.0_32",
   }
-
-# https://dl.dropbox.com/u/7225008/Java/sun-javadb-demo-10.6.2-1.1.i386.rpm
-# https://dl.dropbox.com/u/7225008/Java/sun-javadb-docs-10.6.2-1.1.i386.rpm
-# https://dl.dropbox.com/u/7225008/Java/sun-javadb-javadoc-10.6.2-1.1.i386.rpm
 }
