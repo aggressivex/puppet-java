@@ -1,0 +1,6 @@
+class conf {
+
+  $setup = {}
+  $default = {}
+
+}
